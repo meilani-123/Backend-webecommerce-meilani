@@ -85,14 +85,37 @@ class ProdukController extends Controller
             ], 404);
         }
 
-        $produk->update($request->all());
+        $validator = Validator::make($request->all(), [
+            'nama_produk' => 'required',
+            'merk' => 'required',
+            'deskripsi' => 'required',
+            'harga' => 'required|numeric',
+            'stok' => 'required|numeric',
+            'gambar' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'error' => $validator->errors()
+            ], 422);
+        }
+
+        $produk->nama_produk = $request->nama_produk;
+        $produk->merk = $request->merk;
+        $produk->deskripsi = $request->deskripsi;
+        $produk->harga = $request->harga;
+        $produk->stok = $request->stok;
+        $produk->gambar = $request->gambar;
+
+        $produk->save();
 
         return response()->json([
             'status' => 'success',
+            'message' => 'Produk berhasil diupdate',
             'data' => $produk
         ]);
     }
-
     /**
      * Remove the specified resource from storage.
      */
